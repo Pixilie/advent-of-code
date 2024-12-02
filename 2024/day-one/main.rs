@@ -1,8 +1,7 @@
 use std::fs;
 
 fn main() {
-    let mut result = Vec::<i32>::new();
-    
+    // Input parsing
     let content = fs::read_to_string("./input")
         .expect("Should have been able to read the file");
 
@@ -21,41 +20,35 @@ fn main() {
         }
     }
 
-    while !list_one.is_empty() && !list_two.is_empty() {
-        // Find the minimum in list_one
-        let min_one = *list_one.iter().min().unwrap();
-        let min_two = *list_two.iter().min().unwrap();
-        let mut difference = 0;
-        
-        if min_two.abs() > min_one.abs() {                           
-            difference = min_two.abs() - min_one.abs();
-        } else {
-            difference = min_one.abs() - min_two.abs();
-        }
+    list_one.sort();
+    list_two.sort();
+
+    // Part 1
+    let mut result_sum = Vec::<i32>::new();
+    let mut index = 0;
+
+    while index < list_one.len() {
+        let distance = list_one[index] - list_two[index];       
+        result_sum.push(distance.abs());
+        index += 1;
+    }
+    
+    let result_part_one = result_sum.iter().sum::<i32>();
+    println!("Part 1: {result_part_one}");
+
+    // Part 2
+    let mut result_similarity = Vec::<i32>::new();
        
-        result.push(difference);
+    for value in list_one {
+        let mut n = 0;
+        
+        for elt in &list_two {
+            if value == *elt { n += 1; }    
+        }
 
-        println!("{} {} {}", min_one, min_two, difference);
-
-        let mut removed_one = false;
-        let mut removed_two = false;
-
-        list_one.retain(|&x| {
-            if !removed_one && x == min_one {
-                removed_one = true;
-                false
-            } else { true }
-        });
-
-        list_two.retain(|&x| {
-            if !removed_two && x == min_two {
-                removed_two = true;
-                false
-            } else { true }
-        });
+        result_similarity.push(value * n);
     }
 
-    let result_sum = result.iter().sum::<i32>();
-
-    println!("Results: {}", result_sum);
+    let result_part_two = result_similarity.iter().sum::<i32>();
+    println!("Part 2: {result_part_two}");
 }
